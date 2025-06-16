@@ -1,0 +1,1334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API Craft - Express + Mongoose Scaffold</title>
+    <meta name="description" content="@tselven/api-craft - A powerful scaffold starter for building APIs using Express and Mongoose">
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.1/font/bootstrap-icons.min.css" rel="stylesheet">
+    <!-- Prism.js for syntax highlighting -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --secondary-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            --accent-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            --dark-gradient: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+        }
+        
+        .hero-section {
+            background: var(--primary-gradient);
+            min-height: 100vh;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .hero-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grid" width="10" height="10" patternUnits="userSpaceOnUse"><path d="M 10 0 L 0 0 0 10" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="1"/></pattern></defs><rect width="100" height="100" fill="url(%23grid)"/></svg>');
+            opacity: 0.3;
+        }
+        
+        .hero-curves {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            overflow: hidden;
+            line-height: 0;
+        }
+        
+        .hero-curves svg {
+            position: relative;
+            display: block;
+            width: calc(100% + 1.3px);
+            height: 100px;
+        }
+        
+        .hero-curves .shape-fill {
+            fill: #f8f9fa;
+        }
+        
+        .section-curves {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            overflow: hidden;
+            line-height: 0;
+            transform: rotate(180deg);
+        }
+        
+        .section-curves svg {
+            position: relative;
+            display: block;
+            width: calc(100% + 1.3px);
+            height: 80px;
+        }
+        
+        .section-curves .shape-fill {
+            fill: #ffffff;
+        }
+        
+        .feature-card {
+            transition: all 0.3s ease;
+            border: none;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            backdrop-filter: blur(10px);
+            background: rgba(255,255,255,0.95);
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+        }
+        
+        .gradient-text {
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .btn-gradient {
+            background: var(--secondary-gradient);
+            border: none;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .btn-gradient::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s;
+        }
+        
+        .btn-gradient:hover::before {
+            left: 100%;
+        }
+        
+        .btn-gradient:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+        }
+        
+        .code-block {
+            background: #1a1a1a;
+            border-radius: 15px;
+            position: relative;
+            border: 1px solid #333;
+            overflow: hidden;
+        }
+        
+        .code-header {
+            background: linear-gradient(90deg, #2d3748, #4a5568);
+            padding: 12px 20px;
+            border-bottom: 1px solid #333;
+            display: flex;
+            justify-content: between;
+            align-items: center;
+        }
+        
+        .code-dots {
+            display: flex;
+            gap: 6px;
+        }
+        
+        .code-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+        
+        .dot-red { background: #ff5f56; }
+        .dot-yellow { background: #ffbd2e; }
+        .dot-green { background: #27ca3f; }
+        
+        .copy-btn {
+            background: var(--accent-gradient);
+            border: none;
+            border-radius: 8px;
+            padding: 8px 12px;
+            color: white;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            opacity: 0.8;
+        }
+        
+        .copy-btn:hover {
+            opacity: 1;
+            transform: scale(1.05);
+        }
+        
+        .copy-btn.copied {
+            background: #27ca3f;
+        }
+        
+        .floating-element {
+            position: absolute;
+            opacity: 0.1;
+            z-index: 1;
+        }
+        
+        .api-tabs {
+            background: var(--dark-gradient);
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        
+        .nav-pills .nav-link {
+            background: transparent;
+            color: #fff;
+            border-radius: 0;
+            padding: 15px 25px;
+            transition: all 0.3s ease;
+        }
+        
+        .nav-pills .nav-link.active {
+            background: var(--accent-gradient);
+            color: white;
+        }
+        
+        .tab-content {
+            background: #1a1a1a;
+            padding: 0;
+        }
+        
+        .glassmorphism {
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+        
+        @media (max-width: 768px) {
+            .hero-section h1 { font-size: 2.5rem; }
+            .display-4 { font-size: 2rem; }
+            .hero-curves svg { height: 60px; }
+            .section-curves svg { height: 50px; }
+        }
+        
+        /* Scroll animations */
+        .fade-in {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.6s ease;
+        }
+        
+        .fade-in.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top shadow">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="#">
+                <i class="bi bi-gear-fill me-2"></i>API Craft
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link" href="#features">Features</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#installation">Installation</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#usage">Usage</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#examples">Examples</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#api">API</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero-section d-flex align-items-center position-relative">
+        <!-- Floating Elements -->
+        <div class="floating-element" style="top: 10%; left: 10%;">
+            <i class="bi bi-code-slash display-1"></i>
+        </div>
+        <div class="floating-element" style="top: 20%; right: 15%;">
+            <i class="bi bi-database display-1"></i>
+        </div>
+        <div class="floating-element" style="bottom: 30%; left: 20%;">
+            <i class="bi bi-lightning display-1"></i>
+        </div>
+        <div class="floating-element" style="bottom: 20%; right: 10%;">
+            <i class="bi bi-rocket display-1"></i>
+        </div>
+
+        <div class="container text-center text-white position-relative" style="z-index: 2;">
+            <div class="row justify-content-center">
+                <div class="col-lg-8">
+                    <h1 class="display-3 fw-bold mb-4 hero-title">API Craft</h1>
+                    <p class="lead mb-4 hero-subtitle">The ultimate Express + Mongoose scaffold starter for building robust APIs in minutes, not hours.</p>
+                    <div class="mb-4">
+                        <div class="code-block d-inline-block">
+                            <div class="code-header">
+                                <div class="code-dots">
+                                    <div class="code-dot dot-red"></div>
+                                    <div class="code-dot dot-yellow"></div>
+                                    <div class="code-dot dot-green"></div>
+                                </div>
+                                <button class="copy-btn ms-auto" onclick="copyToClipboard('npm install -g @tselven/api-craft', this)">
+                                    <i class="bi bi-clipboard"></i> Copy
+                                </button>
+                            </div>
+                            <div class="p-3">
+                                <code class="text-info fs-5">npm install -g @tselven/api-craft</code>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="d-flex gap-3 justify-content-center flex-wrap">
+                        <a href="#installation" class="btn btn-gradient btn-lg px-4 py-2 text-white">
+                            <i class="bi bi-download me-2"></i>Get Started
+                        </a>
+                        <a href="https://npmjs.com/package/@tselven/api-craft" class="btn glassmorphism btn-lg px-4 py-2 text-white">
+                            <i class="bi bi-box-seam me-2"></i>View on NPM
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Hero Curves -->
+        <div class="hero-curves">
+            <svg data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" preserveAspectRatio="none">
+                <path d="M985.66,92.83C906.67,72,823.78,31,743.84,14.19c-82.26-17.34-168.06-16.33-250.45.39-57.84,11.73-114,31.07-172,41.86A600.21,600.21,0,0,1,0,27.35V120H1200V95.8C1132.19,118.92,1055.71,111.31,985.66,92.83Z" class="shape-fill"></path>
+            </svg>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="features" class="py-5 bg-light position-relative">
+        <div class="section-curves">
+            <svg data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" preserveAspectRatio="none">
+                <path d="M985.66,92.83C906.67,72,823.78,31,743.84,14.19c-82.26-17.34-168.06-16.33-250.45.39-57.84,11.73-114,31.07-172,41.86A600.21,600.21,0,0,1,0,27.35V120H1200V95.8C1132.19,118.92,1055.71,111.31,985.66,92.83Z" class="shape-fill"></path>
+            </svg>
+        </div>
+        
+        <div class="container" style="padding-top: 80px;">
+            <div class="row mb-5">
+                <div class="col-lg-8 mx-auto text-center fade-in">
+                    <h2 class="display-4 fw-bold gradient-text mb-3">Why API Craft?</h2>
+                    <p class="lead text-muted">Stop spending hours setting up the same boilerplate. Start building features from day one.</p>
+                </div>
+            </div>
+            
+            <div class="row g-4">
+                <div class="col-md-6 col-lg-4 feature-item fade-in">
+                    <div class="card feature-card h-100 border-0">
+                        <div class="card-body text-center p-4">
+                            <div class="mb-3">
+                                <i class="bi bi-lightning-charge display-4 text-warning"></i>
+                            </div>
+                            <h5 class="card-title fw-bold">Lightning Fast Setup</h5>
+                            <p class="card-text text-muted">Get a production-ready API structure in under 30 seconds with pre-configured Express and Mongoose.</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-6 col-lg-4 feature-item fade-in">
+                    <div class="card feature-card h-100 border-0">
+                        <div class="card-body text-center p-4">
+                            <div class="mb-3">
+                                <i class="bi bi-shield-check display-4 text-success"></i>
+                            </div>
+                            <h5 class="card-title fw-bold">Security First</h5>
+                            <p class="card-text text-muted">Built-in JWT authentication, CORS, helmet, and rate limiting. Security best practices included.</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-6 col-lg-4 feature-item fade-in">
+                    <div class="card feature-card h-100 border-0">
+                        <div class="card-body text-center p-4">
+                            <div class="mb-3">
+                                <i class="bi bi-database display-4 text-primary"></i>
+                            </div>
+                            <h5 class="card-title fw-bold">MongoDB Ready</h5>
+                            <p class="card-text text-muted">Pre-configured Mongoose models, schemas, and database connection with error handling.</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-6 col-lg-4 feature-item fade-in">
+                    <div class="card feature-card h-100 border-0">
+                        <div class="card-body text-center p-4">
+                            <div class="mb-3">
+                                <i class="bi bi-code-slash display-4 text-info"></i>
+                            </div>
+                            <h5 class="card-title fw-bold">Clean Architecture</h5>
+                            <p class="card-text text-muted">MVC pattern with organized routes, controllers, models, and middleware structure.</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-6 col-lg-4 feature-item fade-in">
+                    <div class="card feature-card h-100 border-0">
+                        <div class="card-body text-center p-4">
+                            <div class="mb-3">
+                                <i class="bi bi-tools display-4 text-danger"></i>
+                            </div>
+                            <h5 class="card-title fw-bold">Developer Tools</h5>
+                            <p class="card-text text-muted">Hot reload, error handling, logging, validation, and environment configuration out of the box.</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-6 col-lg-4 feature-item fade-in">
+                    <div class="card feature-card h-100 border-0">
+                        <div class="card-body text-center p-4">
+                            <div class="mb-3">
+                                <i class="bi bi-rocket display-4" style="color: #8b5cf6;"></i>
+                            </div>
+                            <h5 class="card-title fw-bold">Production Ready</h5>
+                            <p class="card-text text-muted">Environment configs, health checks, and deployment-ready structure for immediate production use.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Installation Section -->
+    <section id="installation" class="py-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 mx-auto">
+                    <h2 class="display-4 fw-bold text-center mb-5 gradient-text fade-in">Quick Start</h2>
+                    
+                    <div class="row g-4">
+                        <div class="col-md-6 install-step fade-in">
+                            <div class="d-flex align-items-start">
+                                <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 40px; height: 40px;">
+                                    <strong>1</strong>
+                                </div>
+                                <div class="flex-grow-1">
+                                    <h5 class="fw-bold">Install Globally</h5>
+                                    <div class="code-block mb-3">
+                                        <div class="code-header">
+                                            <div class="code-dots">
+                                                <div class="code-dot dot-red"></div>
+                                                <div class="code-dot dot-yellow"></div>
+                                                <div class="code-dot dot-green"></div>
+                                            </div>
+                                            <button class="copy-btn" onclick="copyToClipboard('npm install -g @tselven/api-craft', this)">
+                                                <i class="bi bi-clipboard"></i> Copy
+                                            </button>
+                                        </div>
+                                        <div class="p-3">
+                                            <pre><code class="language-bash">npm install -g @tselven/api-craft</code></pre>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6 install-step fade-in">
+                            <div class="d-flex align-items-start">
+                                <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 40px; height: 40px;">
+                                    <strong>2</strong>
+                                </div>
+                                <div class="flex-grow-1">
+                                    <h5 class="fw-bold">Create Project</h5>
+                                    <div class="code-block mb-3">
+                                        <div class="code-header">
+                                            <div class="code-dots">
+                                                <div class="code-dot dot-red"></div>
+                                                <div class="code-dot dot-yellow"></div>
+                                                <div class="code-dot dot-green"></div>
+                                            </div>
+                                            <button class="copy-btn" onclick="copyToClipboard('api-craft create my-api', this)">
+                                                <i class="bi bi-clipboard"></i> Copy
+                                            </button>
+                                        </div>
+                                        <div class="p-3">
+                                            <pre><code class="language-bash">api-craft create my-api</code></pre>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6 install-step fade-in">
+                            <div class="d-flex align-items-start">
+                                <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 40px; height: 40px;">
+                                    <strong>3</strong>
+                                </div>
+                                <div class="flex-grow-1">
+                                    <h5 class="fw-bold">Navigate & Install</h5>
+                                    <div class="code-block mb-3">
+                                        <div class="code-header">
+                                            <div class="code-dots">
+                                                <div class="code-dot dot-red"></div>
+                                                <div class="code-dot dot-yellow"></div>
+                                                <div class="code-dot dot-green"></div>
+                                            </div>
+                                            <button class="copy-btn" onclick="copyToClipboard('cd my-api && npm install', this)">
+                                                <i class="bi bi-clipboard"></i> Copy
+                                            </button>
+                                        </div>
+                                        <div class="p-3">
+                                            <pre><code class="language-bash">cd my-api && npm install</code></pre>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6 install-step fade-in">
+                            <div class="d-flex align-items-start">
+                                <div class="bg-success text-white rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 40px; height: 40px;">
+                                    <strong>4</strong>
+                                </div>
+                                <div class="flex-grow-1">
+                                    <h5 class="fw-bold">Start Building</h5>
+                                    <div class="code-block mb-3">
+                                        <div class="code-header">
+                                            <div class="code-dots">
+                                                <div class="code-dot dot-red"></div>
+                                                <div class="code-dot dot-yellow"></div>
+                                                <div class="code-dot dot-green"></div>
+                                            </div>
+                                            <button class="copy-btn" onclick="copyToClipboard('npm run dev', this)">
+                                                <i class="bi bi-clipboard"></i> Copy
+                                            </button>
+                                        </div>
+                                        <div class="p-3">
+                                            <pre><code class="language-bash">npm run dev</code></pre>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Usage Section -->
+    <section id="usage" class="py-5 bg-light">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-10 mx-auto">
+                    <h2 class="display-4 fw-bold text-center mb-5 gradient-text fade-in">Project Structure</h2>
+                    
+                    <div class="row g-4">
+                        <div class="col-lg-6 fade-in">
+                            <div class="code-block">
+                                <div class="code-header">
+                                    <div class="code-dots">
+                                        <div class="code-dot dot-red"></div>
+                                        <div class="code-dot dot-yellow"></div>
+                                        <div class="code-dot dot-green"></div>
+                                    </div>
+                                    <span class="text-white ms-2">Project Structure</span>
+                                    <button class="copy-btn ms-auto" onclick="copyToClipboard(`my-api/
+├── src/
+│   ├── controllers/
+│   │   ├── auth.js
+│   │   └── user.js
+│   ├── models/
+│   │   └── User.js
+│   ├── routes/
+│   │   ├── auth.js
+│   │   └── users.js
+│   ├── middleware/
+│   │   ├── auth.js
+│   │   └── validation.js
+│   ├── config/
+│   │   └── database.js
+│   └── app.js
+├── .env.example
+├── package.json
+└── server.js`, this)">
+                                        <i class="bi bi-clipboard"></i> Copy
+                                    </button>
+                                </div>
+                                <div class="p-4">
+                                    <pre><code class="language-bash">my-api/
+├── src/
+│   ├── controllers/
+│   │   ├── auth.js
+│   │   └── user.js
+│   ├── models/
+│   │   └── User.js
+│   ├── routes/
+│   │   ├── auth.js
+│   │   └── users.js
+│   ├── middleware/
+│   │   ├── auth.js
+│   │   └── validation.js
+│   ├── config/
+│   │   └── database.js
+│   └── app.js
+├── .env.example
+├── package.json
+└── server.js</code></pre>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-lg-6 fade-in">
+                            <h4 class="fw-bold mb-3">What's Included:</h4>
+                            <ul class="list-unstyled">
+                                <li class="mb-2"><i class="bi bi-check-circle-fill text-success me-2"></i><strong>Express Server</strong> - Fully configured with middleware</li>
+                                <li class="mb-2"><i class="bi bi-check-circle-fill text-success me-2"></i><strong>MongoDB Connection</strong> - Mongoose setup with error handling</li>
+                                <li class="mb-2"><i class="bi bi-check-circle-fill text-success me-2"></i><strong>Authentication</strong> - JWT-based auth system</li>
+                                <li class="mb-2"><i class="bi bi-check-circle-fill text-success me-2"></i><strong>User Management</strong> - CRUD operations for users</li>
+                                <li class="mb-2"><i class="bi bi-check-circle-fill text-success me-2"></i><strong>Input Validation</strong> - Request validation middleware</li>
+                                <li class="mb-2"><i class="bi bi-check-circle-fill text-success me-2"></i><strong>Error Handling</strong> - Centralized error management</li>
+                                <li class="mb-2"><i class="bi bi-check-circle-fill text-success me-2"></i><strong>CORS & Security</strong> - Production-ready security headers</li>
+                                <li class="mb-2"><i class="bi bi-check-circle-fill text-success me-2"></i><strong>Environment Config</strong> - Development and production settings</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Examples Section -->
+    <section id="examples" class="py-5">
+        <div class="container">
+            <h2 class="display-4 fw-bold text-center mb-5 gradient-text fade-in">Code Examples</h2>
+            
+            <div class="row">
+                <div class="col-lg-10 mx-auto">
+                    <div class="api-tabs fade-in">
+                        <ul class="nav nav-pills nav-fill" id="pills-tab" role="tablist">
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link active fw-bold" id="pills-fetch-tab" data-bs-toggle="pill" data-bs-target="#pills-fetch" type="button" role="tab" aria-controls="pills-fetch" aria-selected="true">
+                                    <i class="bi bi-globe me-2"></i>Fetch API
+                                </button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link fw-bold" id="pills-axios-tab" data-bs-toggle="pill" data-bs-target="#pills-axios" type="button" role="tab" aria-controls="pills-axios" aria-selected="false">
+                                    <i class="bi bi-arrow-repeat me-2"></i>Axios
+                                </button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link fw-bold" id="pills-curl-tab" data-bs-toggle="pill" data-bs-target="#pills-curl" type="button" role="tab" aria-controls="pills-curl" aria-selected="false">
+                                    <i class="bi bi-terminal me-2"></i>cURL
+                                </button>
+                            </li>
+                            </ul>
+                        <div class="tab-content" id="pills-tabContent">
+                            <div class="tab-pane fade show active" id="pills-fetch" role="tabpanel" aria-labelledby="pills-fetch-tab">
+                                <div class="p-4">
+                                    <h5 class="text-white mb-3">User Registration with Fetch API</h5>
+                                    <div class="code-block">
+                                        <div class="code-header">
+                                            <div class="code-dots">
+                                                <div class="code-dot dot-red"></div>
+                                                <div class="code-dot dot-yellow"></div>
+                                                <div class="code-dot dot-green"></div>
+                                            </div>
+                                            <span class="text-white ms-2">JavaScript</span>
+                                            <button class="copy-btn ms-auto" onclick="copyToClipboard(`// Register a new user
+const registerUser = async (userData) => {
+  try {
+    const response = await fetch('http://localhost:3000/api/auth/register', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(userData)
+    });
+    
+    const data = await response.json();
+    
+    if (response.ok) {
+      console.log('User registered:', data);
+      localStorage.setItem('token', data.token);
+      return data;
+    } else {
+      throw new Error(data.message);
+    }
+  } catch (error) {
+    console.error('Registration failed:', error);
+    throw error;
+  }
+};
+
+// Usage
+registerUser({
+  name: 'John Doe',
+  email: 'john@example.com',
+  password: 'securePassword123'
+});`, this)">
+                                                <i class="bi bi-clipboard"></i> Copy
+                                            </button>
+                                        </div>
+                                        <div class="p-3">
+                                            <pre><code class="language-javascript">// Register a new user
+const registerUser = async (userData) => {
+  try {
+    const response = await fetch('http://localhost:3000/api/auth/register', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(userData)
+    });
+    
+    const data = await response.json();
+    
+    if (response.ok) {
+      console.log('User registered:', data);
+      localStorage.setItem('token', data.token);
+      return data;
+    } else {
+      throw new Error(data.message);
+    }
+  } catch (error) {
+    console.error('Registration failed:', error);
+    throw error;
+  }
+};
+
+// Usage
+registerUser({
+  name: 'John Doe',
+  email: 'john@example.com',
+  password: 'securePassword123'
+});</code></pre>
+                                        </div>
+                                    </div>
+                                    
+                                    <h5 class="text-white mb-3 mt-4">Authenticated Request</h5>
+                                    <div class="code-block">
+                                        <div class="code-header">
+                                            <div class="code-dots">
+                                                <div class="code-dot dot-red"></div>
+                                                <div class="code-dot dot-yellow"></div>
+                                                <div class="code-dot dot-green"></div>
+                                            </div>
+                                            <span class="text-white ms-2">JavaScript</span>
+                                            <button class="copy-btn ms-auto" onclick="copyToClipboard(`// Get user profile with authentication
+const getUserProfile = async () => {
+  try {
+    const token = localStorage.getItem('token');
+    const response = await fetch('http://localhost:3000/api/users/profile', {
+      method: 'GET',
+      headers: {
+        'Authorization': \`Bearer \${token}\`,
+        'Content-Type': 'application/json',
+      }
+    });
+    
+    const data = await response.json();
+    
+    if (response.ok) {
+      console.log('User profile:', data);
+      return data;
+    } else {
+      throw new Error(data.message);
+    }
+  } catch (error) {
+    console.error('Failed to get profile:', error);
+    throw error;
+  }
+};
+
+getUserProfile();`, this)">
+                                                <i class="bi bi-clipboard"></i> Copy
+                                            </button>
+                                        </div>
+                                        <div class="p-3">
+                                            <pre><code class="language-javascript">// Get user profile with authentication
+const getUserProfile = async () => {
+  try {
+    const token = localStorage.getItem('token');
+    const response = await fetch('http://localhost:3000/api/users/profile', {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      }
+    });
+    
+    const data = await response.json();
+    
+    if (response.ok) {
+      console.log('User profile:', data);
+      return data;
+    } else {
+      throw new Error(data.message);
+    }
+  } catch (error) {
+    console.error('Failed to get profile:', error);
+    throw error;
+  }
+};
+
+getUserProfile();</code></pre>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="tab-pane fade" id="pills-axios" role="tabpanel" aria-labelledby="pills-axios-tab">
+                                <div class="p-4">
+                                    <h5 class="text-white mb-3">Using Axios for API Calls</h5>
+                                    <div class="code-block">
+                                        <div class="code-header">
+                                            <div class="code-dots">
+                                                <div class="code-dot dot-red"></div>
+                                                <div class="code-dot dot-yellow"></div>
+                                                <div class="code-dot dot-green"></div>
+                                            </div>
+                                            <span class="text-white ms-2">JavaScript</span>
+                                            <button class="copy-btn ms-auto" onclick="copyToClipboard(`import axios from 'axios';
+
+// Create axios instance with base configuration
+const api = axios.create({
+  baseURL: 'http://localhost:3000/api',
+  headers: {
+    'Content-Type': 'application/json',
+  }
+});
+
+// Add auth token to requests
+api.interceptors.request.use((config) => {
+  const token = localStorage.getItem('token');
+  if (token) {
+    config.headers.Authorization = \`Bearer \${token}\`;
+  }
+  return config;
+});
+
+// Register user
+const registerUser = async (userData) => {
+  try {
+    const response = await api.post('/auth/register', userData);
+    localStorage.setItem('token', response.data.token);
+    return response.data;
+  } catch (error) {
+    console.error('Registration failed:', error.response.data);
+    throw error;
+  }
+};
+
+// Login user
+const loginUser = async (credentials) => {
+  try {
+    const response = await api.post('/auth/login', credentials);
+    localStorage.setItem('token', response.data.token);
+    return response.data;
+  } catch (error) {
+    console.error('Login failed:', error.response.data);
+    throw error;
+  }
+};
+
+// Get all users
+const getUsers = async () => {
+  try {
+    const response = await api.get('/users');
+    return response.data;
+  } catch (error) {
+    console.error('Failed to get users:', error.response.data);
+    throw error;
+  }
+};`, this)">
+                                                <i class="bi bi-clipboard"></i> Copy
+                                            </button>
+                                        </div>
+                                        <div class="p-3">
+                                            <pre><code class="language-javascript">import axios from 'axios';
+
+// Create axios instance with base configuration
+const api = axios.create({
+  baseURL: 'http://localhost:3000/api',
+  headers: {
+    'Content-Type': 'application/json',
+  }
+});
+
+// Add auth token to requests
+api.interceptors.request.use((config) => {
+  const token = localStorage.getItem('token');
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+});
+
+// Register user
+const registerUser = async (userData) => {
+  try {
+    const response = await api.post('/auth/register', userData);
+    localStorage.setItem('token', response.data.token);
+    return response.data;
+  } catch (error) {
+    console.error('Registration failed:', error.response.data);
+    throw error;
+  }
+};
+
+// Login user
+const loginUser = async (credentials) => {
+  try {
+    const response = await api.post('/auth/login', credentials);
+    localStorage.setItem('token', response.data.token);
+    return response.data;
+  } catch (error) {
+    console.error('Login failed:', error.response.data);
+    throw error;
+  }
+};
+
+// Get all users
+const getUsers = async () => {
+  try {
+    const response = await api.get('/users');
+    return response.data;
+  } catch (error) {
+    console.error('Failed to get users:', error.response.data);
+    throw error;
+  }
+};</code></pre>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="tab-pane fade" id="pills-curl" role="tabpanel" aria-labelledby="pills-curl-tab">
+                                <div class="p-4">
+                                    <h5 class="text-white mb-3">cURL Commands</h5>
+                                    <div class="code-block">
+                                        <div class="code-header">
+                                            <div class="code-dots">
+                                                <div class="code-dot dot-red"></div>
+                                                <div class="code-dot dot-yellow"></div>
+                                                <div class="code-dot dot-green"></div>
+                                            </div>
+                                            <span class="text-white ms-2">Bash</span>
+                                            <button class="copy-btn ms-auto" onclick="copyToClipboard(`# Register a new user
+curl -X POST http://localhost:3000/api/auth/register \\
+  -H 'Content-Type: application/json' \\
+  -d '{
+    \"name\": \"John Doe\",
+    \"email\": \"john@example.com\",
+    \"password\": \"securePassword123\"
+  }'
+
+# Login user
+curl -X POST http://localhost:3000/api/auth/login \\
+  -H 'Content-Type: application/json' \\
+  -d '{
+    \"email\": \"john@example.com\",
+    \"password\": \"securePassword123\"
+  }'
+
+# Get user profile (replace YOUR_TOKEN with actual token)
+curl -X GET http://localhost:3000/api/users/profile \\
+  -H 'Authorization: Bearer YOUR_TOKEN' \\
+  -H 'Content-Type: application/json'
+
+# Get all users
+curl -X GET http://localhost:3000/api/users \\
+  -H 'Authorization: Bearer YOUR_TOKEN' \\
+  -H 'Content-Type: application/json'
+
+# Update user profile
+curl -X PUT http://localhost:3000/api/users/profile \\
+  -H 'Authorization: Bearer YOUR_TOKEN' \\
+  -H 'Content-Type: application/json' \\
+  -d '{
+    \"name\": \"John Updated\",
+    \"email\": \"john.updated@example.com\"
+  }'`, this)">
+                                                <i class="bi bi-clipboard"></i> Copy
+                                            </button>
+                                        </div>
+                                        <div class="p-3">
+                                            <pre><code class="language-bash"># Register a new user
+curl -X POST http://localhost:3000/api/auth/register \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "name": "John Doe",
+    "email": "john@example.com",
+    "password": "securePassword123"
+  }'
+
+# Login user
+curl -X POST http://localhost:3000/api/auth/login \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "email": "john@example.com",
+    "password": "securePassword123"
+  }'
+
+# Get user profile (replace YOUR_TOKEN with actual token)
+curl -X GET http://localhost:3000/api/users/profile \
+  -H 'Authorization: Bearer YOUR_TOKEN' \
+  -H 'Content-Type: application/json'
+
+# Get all users
+curl -X GET http://localhost:3000/api/users \
+  -H 'Authorization: Bearer YOUR_TOKEN' \
+  -H 'Content-Type: application/json'
+
+# Update user profile
+curl -X PUT http://localhost:3000/api/users/profile \
+  -H 'Authorization: Bearer YOUR_TOKEN' \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "name": "John Updated",
+    "email": "john.updated@example.com"
+  }'</code></pre>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- API Documentation Section -->
+    <section id="api" class="py-5 bg-light">
+        <div class="container">
+            <h2 class="display-4 fw-bold text-center mb-5 gradient-text fade-in">API Endpoints</h2>
+            
+            <div class="row">
+                <div class="col-lg-10 mx-auto">
+                    <div class="row g-4">
+                        <div class="col-md-6 fade-in">
+                            <div class="card border-0 shadow-sm h-100">
+                                <div class="card-header bg-primary text-white">
+                                    <h5 class="mb-0"><i class="bi bi-shield-lock me-2"></i>Authentication</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="mb-3">
+                                        <span class="badge bg-success me-2">POST</span>
+                                        <code>/api/auth/register</code>
+                                        <p class="text-muted small mt-1">Register a new user account</p>
+                                    </div>
+                                    <div class="mb-3">
+                                        <span class="badge bg-success me-2">POST</span>
+                                        <code>/api/auth/login</code>
+                                        <p class="text-muted small mt-1">Login with email and password</p>
+                                    </div>
+                                    <div class="mb-3">
+                                        <span class="badge bg-warning me-2">POST</span>
+                                        <code>/api/auth/refresh</code>
+                                        <p class="text-muted small mt-1">Refresh authentication token</p>
+                                    </div>
+                                    <div>
+                                        <span class="badge bg-danger me-2">POST</span>
+                                        <code>/api/auth/logout</code>
+                                        <p class="text-muted small mt-1">Logout and invalidate token</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6 fade-in">
+                            <div class="card border-0 shadow-sm h-100">
+                                <div class="card-header bg-info text-white">
+                                    <h5 class="mb-0"><i class="bi bi-people me-2"></i>User Management</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="mb-3">
+                                        <span class="badge bg-primary me-2">GET</span>
+                                        <code>/api/users</code>
+                                        <p class="text-muted small mt-1">Get all users (admin only)</p>
+                                    </div>
+                                    <div class="mb-3">
+                                        <span class="badge bg-primary me-2">GET</span>
+                                        <code>/api/users/profile</code>
+                                        <p class="text-muted small mt-1">Get current user profile</p>
+                                    </div>
+                                    <div class="mb-3">
+                                        <span class="badge bg-warning me-2">PUT</span>
+                                        <code>/api/users/profile</code>
+                                        <p class="text-muted small mt-1">Update user profile</p>
+                                    </div>
+                                    <div>
+                                        <span class="badge bg-danger me-2">DELETE</span>
+                                        <code>/api/users/:id</code>
+                                        <p class="text-muted small mt-1">Delete user account</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-12 fade-in">
+                            <div class="card border-0 shadow-sm">
+                                <div class="card-header bg-dark text-white">
+                                    <h5 class="mb-0"><i class="bi bi-gear me-2"></i>Response Format</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="code-block">
+                                        <div class="code-header">
+                                            <div class="code-dots">
+                                                <div class="code-dot dot-red"></div>
+                                                <div class="code-dot dot-yellow"></div>
+                                                <div class="code-dot dot-green"></div>
+                                            </div>
+                                            <span class="text-white ms-2">JSON Response</span>
+                                            <button class="copy-btn ms-auto" onclick="copyToClipboard(`{
+  \"success\": true,
+  \"message\": \"Operation completed successfully\",
+  \"data\": {
+    \"user\": {
+      \"id\": \"64f1a2b3c4d5e6f7g8h9i0j1\",
+      \"name\": \"John Doe\",
+      \"email\": \"john@example.com\",
+      \"createdAt\": \"2024-01-15T10:30:00.000Z\",
+      \"updatedAt\": \"2024-01-15T10:30:00.000Z\"
+    },
+    \"token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...\"
+  },
+  \"timestamp\": \"2024-01-15T10:30:00.000Z\"
+}`, this)">
+                                                <i class="bi bi-clipboard"></i> Copy
+                                            </button>
+                                        </div>
+                                        <div class="p-3">
+                                            <pre><code class="language-json">{
+  "success": true,
+  "message": "Operation completed successfully",
+  "data": {
+    "user": {
+      "id": "64f1a2b3c4d5e6f7g8h9i0j1",
+      "name": "John Doe",
+      "email": "john@example.com",
+      "createdAt": "2024-01-15T10:30:00.000Z",
+      "updatedAt": "2024-01-15T10:30:00.000Z"
+    },
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+  },
+  "timestamp": "2024-01-15T10:30:00.000Z"
+}</code></pre>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-dark text-white py-5">
+        <div class="container">
+            <div class="row g-4">
+                <div class="col-lg-4">
+                    <h5 class="fw-bold mb-3">
+                        <i class="bi bi-gear-fill me-2"></i>API Craft
+                    </h5>
+                    <p class="text-light opacity-75 mb-4">
+                        The ultimate Express + Mongoose scaffold starter for building robust APIs. Stop reinventing the wheel and start building features from day one.
+                    </p>
+                    <div class="d-flex gap-3">
+                        <a href="https://github.com/tselven/api-craft" class="text-white opacity-75 hover-opacity-100 transition-opacity">
+                            <i class="bi bi-github fs-4"></i>
+                        </a>
+                        <a href="https://npmjs.com/package/@tselven/api-craft" class="text-white opacity-75 hover-opacity-100 transition-opacity">
+                            <i class="bi bi-box-seam fs-4"></i>
+                        </a>
+                        <a href="https://twitter.com/tselven" class="text-white opacity-75 hover-opacity-100 transition-opacity">
+                            <i class="bi bi-twitter fs-4"></i>
+                        </a>
+                    </div>
+                </div>
+                
+                <div class="col-lg-2 col-md-6">
+                    <h5 class="fw-bold mb-3">Quick Links</h5>
+                    <ul class="list-unstyled">
+                        <li class="mb-2"><a href="#features" class="text-light opacity-75 text-decoration-none hover-opacity-100">Features</a></li>
+                        <li class="mb-2"><a href="#installation" class="text-light opacity-75 text-decoration-none hover-opacity-100">Installation</a></li>
+                        <li class="mb-2"><a href="#usage" class="text-light opacity-75 text-decoration-none hover-opacity-100">Usage</a></li>
+                        <li class="mb-2"><a href="#examples" class="text-light opacity-75 text-decoration-none hover-opacity-100">Examples</a></li>
+                        <li><a href="#api" class="text-light opacity-75 text-decoration-none hover-opacity-100">API Docs</a></li>
+                    </ul>
+                </div>
+                
+                <div class="col-lg-2 col-md-6">
+                    <h5 class="fw-bold mb-3">Resources</h5>
+                    <ul class="list-unstyled">
+                        <li class="mb-2"><a href="https://github.com/tselven/api-craft/wiki" class="text-light opacity-75 text-decoration-none hover-opacity-100">Documentation</a></li>
+                        <li class="mb-2"><a href="https://github.com/tselven/api-craft/issues" class="text-light opacity-75 text-decoration-none hover-opacity-100">Issues</a></li>
+                        <li class="mb-2"><a href="https://github.com/tselven/api-craft/discussions" class="text-light opacity-75 text-decoration-none hover-opacity-100">Discussions</a></li>
+                        <li class="mb-2"><a href="https://github.com/tselven/api-craft/releases" class="text-light opacity-75 text-decoration-none hover-opacity-100">Changelog</a></li>
+                        <li><a href="https://github.com/tselven/api-craft/blob/main/CONTRIBUTING.md" class="text-light opacity-75 text-decoration-none hover-opacity-100">Contributing</a></li>
+                    </ul>
+                </div>
+                
+                <div class="col-lg-4">
+                    <h5 class="fw-bold mb-3">Get Started Now</h5>
+                    <p class="text-light opacity-75 mb-3">
+                        Join thousands of developers who are building APIs faster with API Craft.
+                    </p>
+                    <div class="code-block d-inline-block w-100">
+                        <div class="code-header">
+                            <div class="code-dots">
+                                <div class="code-dot dot-red"></div>
+                                <div class="code-dot dot-yellow"></div>
+                                <div class="code-dot dot-green"></div>
+                            </div>
+                            <button class="copy-btn ms-auto" onclick="copyToClipboard('npm install -g @tselven/api-craft && api-craft create my-api', this)">
+                                <i class="bi bi-clipboard"></i> Copy
+                            </button>
+                        </div>
+                        <div class="p-3">
+                            <code class="text-info">npm install -g @tselven/api-craft<br>api-craft create my-api</code>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <hr class="my-4 opacity-25">
+            
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <p class="mb-0 text-light opacity-75">
+                        © 2024 API Craft. Made with <i class="bi bi-heart-fill text-danger"></i> by 
+                        <a href="https://github.com/tselven" class="text-white text-decoration-none">@tselven</a>
+                    </p>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <div class="d-flex justify-content-md-end gap-3 mt-3 mt-md-0">
+                        <a href="https://github.com/tselven/api-craft/blob/main/LICENSE" class="text-light opacity-75 text-decoration-none small hover-opacity-100">MIT License</a>
+                        <a href="https://github.com/tselven/api-craft/blob/main/PRIVACY.md" class="text-light opacity-75 text-decoration-none small hover-opacity-100">Privacy Policy</a>
+                        <a href="https://github.com/tselven/api-craft/blob/main/TERMS.md" class="text-light opacity-75 text-decoration-none small hover-opacity-100">Terms of Use</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
+    <!-- Prism.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-core.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+
+    <script>
+        // Copy to clipboard functionality
+        function copyToClipboard(text, button) {
+            navigator.clipboard.writeText(text).then(() => {
+                const originalText = button.innerHTML;
+                button.innerHTML = '<i class="bi bi-check"></i> Copied!';
+                button.classList.add('copied');
+                
+                setTimeout(() => {
+                    button.innerHTML = originalText;
+                    button.classList.remove('copied');
+                }, 2000);
+            }).catch(err => {
+                console.error('Failed to copy text: ', err);
+            });
+        }
+
+        // Smooth scrolling for navigation links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Fade in animation on scroll
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, observerOptions);
+
+        // Observe all fade-in elements
+        document.querySelectorAll('.fade-in').forEach(el => {
+            observer.observe(el);
+        });
+
+        // Navbar background on scroll
+        window.addEventListener('scroll', () => {
+            const navbar = document.querySelector('.navbar');
+            if (window.scrollY > 50) {
+                navbar.classList.add('bg-dark');
+            } else {
+                navbar.classList.remove('bg-dark');
+            }
+        });
+
+        // Hero title animation
+        window.addEventListener('load', () => {
+            const heroTitle = document.querySelector('.hero-title');
+            const heroSubtitle = document.querySelector('.hero-subtitle');
+            
+            if (heroTitle) {
+                heroTitle.style.animation = 'fadeInUp 1s ease-out';
+            }
+            if (heroSubtitle) {
+                heroSubtitle.style.animation = 'fadeInUp 1s ease-out 0.3s both';
+            }
+        });
+
+        // Add CSS animation
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes fadeInUp {
+                from {
+                    opacity: 0;
+                    transform: translateY(30px);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
+            
+            .hover-opacity-100:hover {
+                opacity: 1 !important;
+            }
+            
+            .transition-opacity {
+                transition: opacity 0.3s ease;
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+</body>
+</html>
