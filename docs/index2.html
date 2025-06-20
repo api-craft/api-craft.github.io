@@ -1,0 +1,786 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API-Craft Documentation</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #0f0f23;
+            color: #e2e8f0;
+            line-height: 1.6;
+        }
+
+        .docs-container {
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            min-height: 100vh;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            background: linear-gradient(180deg, #1a1a2e 0%, #16213e 100%);
+            border-right: 1px solid #334155;
+            padding: 2rem 0;
+            overflow-y: auto;
+            position: sticky;
+            top: 0;
+            height: 100vh;
+        }
+
+        .sidebar-header {
+            padding: 0 1.5rem 2rem;
+            border-bottom: 1px solid #334155;
+            margin-bottom: 1.5rem;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: linear-gradient(45deg, #3b82f6, #8b5cf6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .sidebar-search {
+            margin-top: 1rem;
+            position: relative;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 0.75rem 1rem 0.75rem 2.5rem;
+            background: rgba(30, 41, 59, 0.5);
+            border: 1px solid #475569;
+            border-radius: 0.5rem;
+            color: #e2e8f0;
+            font-size: 0.875rem;
+            transition: all 0.3s ease;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 0.75rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #64748b;
+            font-size: 0.875rem;
+        }
+
+        .nav-menu {
+            padding: 0 1rem;
+        }
+
+        .nav-chapter {
+            margin-bottom: 1.5rem;
+        }
+
+        .chapter-title {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: #94a3b8;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 0.75rem;
+            padding: 0 0.5rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: color 0.3s ease;
+        }
+
+        .chapter-title:hover {
+            color: #3b82f6;
+        }
+
+        .chapter-icon {
+            font-size: 0.75rem;
+            transition: transform 0.3s ease;
+        }
+
+        .chapter-collapsed .chapter-icon {
+            transform: rotate(-90deg);
+        }
+
+        .chapter-sections {
+            transition: all 0.3s ease;
+            overflow: hidden;
+        }
+
+        .chapter-collapsed .chapter-sections {
+            max-height: 0;
+            opacity: 0;
+        }
+
+        .nav-item {
+            display: block;
+            padding: 0.5rem 1rem;
+            margin: 0.25rem 0;
+            color: #cbd5e1;
+            text-decoration: none;
+            border-radius: 0.375rem;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .nav-item::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 3px;
+            height: 100%;
+            background: #3b82f6;
+            transform: scaleY(0);
+            transition: transform 0.3s ease;
+        }
+
+        .nav-item:hover {
+            background: rgba(59, 130, 246, 0.1);
+            color: #3b82f6;
+            transform: translateX(4px);
+        }
+
+        .nav-item:hover::before {
+            transform: scaleY(1);
+        }
+
+        .nav-item.active {
+            background: rgba(59, 130, 246, 0.2);
+            color: #60a5fa;
+            font-weight: 500;
+        }
+
+        .nav-item.active::before {
+            transform: scaleY(1);
+        }
+
+        /* Main Content */
+        .main-content {
+            padding: 2rem;
+            max-width: none;
+            overflow-x: auto;
+        }
+
+        .content-header {
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #334155;
+        }
+
+        .breadcrumb {
+            font-size: 0.875rem;
+            color: #64748b;
+            margin-bottom: 0.5rem;
+        }
+
+        .breadcrumb a {
+            color: #3b82f6;
+            text-decoration: none;
+        }
+
+        .breadcrumb a:hover {
+            text-decoration: underline;
+        }
+
+        .page-title {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #f1f5f9;
+            margin-bottom: 0.5rem;
+        }
+
+        .page-description {
+            color: #94a3b8;
+            font-size: 1.1rem;
+        }
+
+        .content-body {
+            max-width: 800px;
+        }
+
+        .content-section {
+            margin-bottom: 3rem;
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #f1f5f9;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid #3b82f6;
+        }
+
+        .section-content {
+            color: #cbd5e1;
+            line-height: 1.7;
+        }
+
+        .code-block {
+            background: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 0.5rem;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            overflow-x: auto;
+            position: relative;
+        }
+
+        .code-header {
+            display: flex;
+            justify-content: between;
+            align-items: center;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid #334155;
+        }
+
+        .code-lang {
+            font-size: 0.75rem;
+            color: #64748b;
+            font-weight: 500;
+            text-transform: uppercase;
+        }
+
+        .copy-btn {
+            background: rgba(59, 130, 246, 0.1);
+            border: 1px solid #3b82f6;
+            color: #3b82f6;
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.25rem;
+            font-size: 0.75rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .copy-btn:hover {
+            background: rgba(59, 130, 246, 0.2);
+        }
+
+        .code-content {
+            font-family: 'Courier New', monospace;
+            font-size: 0.875rem;
+            line-height: 1.5;
+            color: #e2e8f0;
+        }
+
+        .loading {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 400px;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid #334155;
+            border-top: 3px solid #3b82f6;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .error {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid #ef4444;
+            border-radius: 0.5rem;
+            padding: 1rem;
+            margin: 2rem 0;
+            color: #fca5a5;
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            .docs-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .sidebar {
+                position: fixed;
+                left: -280px;
+                top: 0;
+                z-index: 1000;
+                transition: left 0.3s ease;
+                height: 100vh;
+            }
+            
+            .sidebar.open {
+                left: 0;
+            }
+            
+            .mobile-toggle {
+                display: block;
+                position: fixed;
+                top: 1rem;
+                left: 1rem;
+                z-index: 1001;
+                background: #1e293b;
+                border: 1px solid #334155;
+                color: #e2e8f0;
+                padding: 0.5rem;
+                border-radius: 0.375rem;
+                cursor: pointer;
+            }
+            
+            .main-content {
+                padding: 4rem 1rem 2rem;
+            }
+        }
+
+        @media (min-width: 769px) {
+            .mobile-toggle {
+                display: none;
+            }
+        }
+
+        /* Table of Contents */
+        .toc {
+            background: rgba(30, 41, 59, 0.5);
+            border: 1px solid #334155;
+            border-radius: 0.5rem;
+            padding: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .toc-title {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #f1f5f9;
+            margin-bottom: 1rem;
+        }
+
+        .toc-list {
+            list-style: none;
+        }
+
+        .toc-item {
+            margin: 0.5rem 0;
+        }
+
+        .toc-link {
+            color: #94a3b8;
+            text-decoration: none;
+            font-size: 0.875rem;
+            transition: color 0.3s ease;
+        }
+
+        .toc-link:hover {
+            color: #3b82f6;
+        }
+    </style>
+</head>
+<body>
+    <button class="mobile-toggle" onclick="toggleSidebar()">☰</button>
+    
+    <div class="docs-container">
+        <nav class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">API-Craft</div>
+                <div class="sidebar-search">
+                    <div class="search-icon">🔍</div>
+                    <input type="text" class="search-input" placeholder="Search docs..." id="searchInput">
+                </div>
+            </div>
+            <div class="nav-menu" id="navMenu">
+                <div class="loading">
+                    <div class="spinner"></div>
+                    <p>Loading documentation...</p>
+                </div>
+            </div>
+        </nav>
+
+        <main class="main-content">
+            <div class="content-header">
+                <div class="breadcrumb" id="breadcrumb"></div>
+                <h1 class="page-title" id="pageTitle">Welcome to API-Craft</h1>
+                <p class="page-description" id="pageDescription">Build powerful APIs with ease</p>
+            </div>
+            
+            <div class="content-body" id="contentBody">
+                <div class="loading">
+                    <div class="spinner"></div>
+                    <p>Loading content...</p>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Sample docs.json structure for demonstration
+        const sampleDocsData = {
+            "title": "API-Craft Documentation",
+            "description": "Complete guide to building APIs with API-Craft",
+            "version": "1.0.0",
+            "chapters": [
+                {
+                    "id": "getting-started",
+                    "title": "Getting Started",
+                    "icon": "🚀",
+                    "sections": [
+                        {
+                            "id": "introduction",
+                            "title": "Introduction",
+                            "description": "Welcome to API-Craft",
+                            "content": "API-Craft is a powerful framework for building robust APIs quickly and efficiently.",
+                            "codeExamples": [
+                                {
+                                    "language": "javascript",
+                                    "title": "Basic Setup",
+                                    "code": "npm install api-craft\n\nconst { APIServer } = require('api-craft');\nconst server = new APIServer();\n\nserver.start(3000);"
+                                }
+                            ]
+                        },
+                        {
+                            "id": "installation",
+                            "title": "Installation",
+                            "description": "How to install API-Craft",
+                            "content": "Install API-Craft using npm or yarn package manager.",
+                            "codeExamples": [
+                                {
+                                    "language": "bash",
+                                    "title": "NPM Installation",
+                                    "code": "npm install api-craft\n# or\nyarn add api-craft"
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "id": "api-reference",
+                    "title": "API Reference",
+                    "icon": "📖",
+                    "sections": [
+                        {
+                            "id": "routes",
+                            "title": "Routes",
+                            "description": "Define API routes",
+                            "content": "Routes are the foundation of your API. Define them using simple, intuitive methods.",
+                            "codeExamples": [
+                                {
+                                    "language": "javascript",
+                                    "title": "Route Definition",
+                                    "code": "server.get('/users', (req, res) => {\n  res.json({ users: [] });\n});\n\nserver.post('/users', (req, res) => {\n  // Create user logic\n  res.status(201).json({ success: true });\n});"
+                                }
+                            ]
+                        },
+                        {
+                            "id": "middleware",
+                            "title": "Middleware",
+                            "description": "Use middleware functions",
+                            "content": "Middleware functions execute during the request-response cycle.",
+                            "codeExamples": [
+                                {
+                                    "language": "javascript",
+                                    "title": "Custom Middleware",
+                                    "code": "const authMiddleware = (req, res, next) => {\n  // Authentication logic\n  if (req.headers.authorization) {\n    next();\n  } else {\n    res.status(401).json({ error: 'Unauthorized' });\n  }\n};\n\nserver.use(authMiddleware);"
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "id": "examples",
+                    "title": "Examples",
+                    "icon": "💡",
+                    "sections": [
+                        {
+                            "id": "basic-crud",
+                            "title": "Basic CRUD",
+                            "description": "Create a basic CRUD API",
+                            "content": "Learn how to implement Create, Read, Update, and Delete operations.",
+                            "codeExamples": [
+                                {
+                                    "language": "javascript",
+                                    "title": "CRUD Operations",
+                                    "code": "// GET all items\nserver.get('/items', (req, res) => {\n  res.json(items);\n});\n\n// GET single item\nserver.get('/items/:id', (req, res) => {\n  const item = items.find(i => i.id === req.params.id);\n  res.json(item);\n});\n\n// POST new item\nserver.post('/items', (req, res) => {\n  const newItem = { id: Date.now(), ...req.body };\n  items.push(newItem);\n  res.status(201).json(newItem);\n});"
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        };
+
+        // State management
+        let currentPage = 'introduction';
+        let docsData = null;
+        let collapsedChapters = new Set();
+
+        // Initialize the documentation
+        async function initDocs() {
+            try {
+                // In a real implementation, you would fetch from docs.json
+                // const response = await fetch('./docs.json');
+                // docsData = await response.json();
+                
+                // Using sample data for demonstration
+                docsData = sampleDocsData;
+                
+                renderNavigation();
+                loadPage(currentPage);
+                setupSearch();
+                
+            } catch (error) {
+                showError('Failed to load documentation');
+            }
+        }
+
+        // Render navigation menu
+        function renderNavigation() {
+            const navMenu = document.getElementById('navMenu');
+            
+            if (!docsData || !docsData.chapters) {
+                navMenu.innerHTML = '<div class="error">No documentation found</div>';
+                return;
+            }
+
+            const navHTML = docsData.chapters.map(chapter => {
+                const isCollapsed = collapsedChapters.has(chapter.id);
+                const sectionsHTML = chapter.sections.map(section => `
+                    <a href="#${section.id}" class="nav-item ${currentPage === section.id ? 'active' : ''}" 
+                       onclick="loadPage('${section.id}')">
+                        ${section.title}
+                    </a>
+                `).join('');
+
+                return `
+                    <div class="nav-chapter ${isCollapsed ? 'chapter-collapsed' : ''}">
+                        <div class="chapter-title" onclick="toggleChapter('${chapter.id}')">
+                            <span class="chapter-icon">▼</span>
+                            ${chapter.icon} ${chapter.title}
+                        </div>
+                        <div class="chapter-sections">
+                            ${sectionsHTML}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            navMenu.innerHTML = navHTML;
+        }
+
+        // Toggle chapter collapse
+        function toggleChapter(chapterId) {
+            if (collapsedChapters.has(chapterId)) {
+                collapsedChapters.delete(chapterId);
+            } else {
+                collapsedChapters.add(chapterId);
+            }
+            renderNavigation();
+        }
+
+        // Load page content
+        function loadPage(sectionId) {
+            currentPage = sectionId;
+            
+            // Find the section data
+            let sectionData = null;
+            let chapterData = null;
+            
+            for (const chapter of docsData.chapters) {
+                const section = chapter.sections.find(s => s.id === sectionId);
+                if (section) {
+                    sectionData = section;
+                    chapterData = chapter;
+                    break;
+                }
+            }
+
+            if (!sectionData) {
+                showError('Section not found');
+                return;
+            }
+
+            // Update breadcrumb
+            const breadcrumb = document.getElementById('breadcrumb');
+            breadcrumb.innerHTML = `
+                <a href="#" onclick="loadPage('introduction')">Documentation</a> / 
+                <a href="#" onclick="loadPage('${chapterData.sections[0].id}')">${chapterData.title}</a> / 
+                ${sectionData.title}
+            `;
+
+            // Update page title and description
+            document.getElementById('pageTitle').textContent = sectionData.title;
+            document.getElementById('pageDescription').textContent = sectionData.description;
+
+            // Render content
+            renderContent(sectionData);
+            
+            // Update navigation active state
+            renderNavigation();
+            
+            // Update URL
+            window.history.pushState({}, '', `#${sectionId}`);
+        }
+
+        // Render page content
+        function renderContent(sectionData) {
+            const contentBody = document.getElementById('contentBody');
+            
+            let contentHTML = `<div class="content-section">`;
+            
+            // Add main content
+            if (sectionData.content) {
+                contentHTML += `
+                    <div class="section-content">
+                        <p>${sectionData.content}</p>
+                    </div>
+                `;
+            }
+
+            // Add code examples
+            if (sectionData.codeExamples && sectionData.codeExamples.length > 0) {
+                sectionData.codeExamples.forEach(example => {
+                    contentHTML += `
+                        <div class="code-block">
+                            <div class="code-header">
+                                <span class="code-lang">${example.language}</span>
+                                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre class="code-content">${escapeHtml(example.code)}</pre>
+                        </div>
+                    `;
+                });
+            }
+
+            contentHTML += `</div>`;
+            contentBody.innerHTML = contentHTML;
+        }
+
+        // Setup search functionality
+        function setupSearch() {
+            const searchInput = document.getElementById('searchInput');
+            
+            searchInput.addEventListener('input', (e) => {
+                const query = e.target.value.toLowerCase();
+                
+                if (query.length === 0) {
+                    renderNavigation();
+                    return;
+                }
+
+                // Filter sections based on search query
+                const filteredChapters = docsData.chapters.map(chapter => {
+                    const filteredSections = chapter.sections.filter(section => 
+                        section.title.toLowerCase().includes(query) ||
+                        section.description.toLowerCase().includes(query) ||
+                        section.content.toLowerCase().includes(query)
+                    );
+
+                    return filteredSections.length > 0 ? {
+                        ...chapter,
+                        sections: filteredSections
+                    } : null;
+                }).filter(Boolean);
+
+                renderFilteredNavigation(filteredChapters);
+            });
+        }
+
+        // Render filtered navigation
+        function renderFilteredNavigation(filteredChapters) {
+            const navMenu = document.getElementById('navMenu');
+            
+            if (filteredChapters.length === 0) {
+                navMenu.innerHTML = '<div class="error">No results found</div>';
+                return;
+            }
+
+            const navHTML = filteredChapters.map(chapter => {
+                const sectionsHTML = chapter.sections.map(section => `
+                    <a href="#${section.id}" class="nav-item ${currentPage === section.id ? 'active' : ''}"
+                       onclick="loadPage('${section.id}')">
+                        ${section.title}
+                    </a>
+                `).join('');
+
+                return `
+                    <div class="nav-chapter">
+                        <div class="chapter-title">
+                            <span class="chapter-icon">▼</span>
+                            ${chapter.icon} ${chapter.title}
+                        </div>
+                        <div class="chapter-sections">
+                            ${sectionsHTML}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            navMenu.innerHTML = navHTML;
+        }
+
+        // Utility functions
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        function copyCode(button) {
+            const codeBlock = button.closest('.code-block');
+            const code = codeBlock.querySelector('.code-content').textContent;
+            
+            navigator.clipboard.writeText(code).then(() => {
+                button.textContent = 'Copied!';
+                setTimeout(() => {
+                    button.textContent = 'Copy';
+                }, 2000);
+            });
+        }
+
+        function showError(message) {
+            const contentBody = document.getElementById('contentBody');
+            contentBody.innerHTML = `<div class="error">${message}</div>`;
+        }
+
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            sidebar.classList.toggle('open');
+        }
+
+        // Handle browser navigation
+        window.addEventListener('popstate', () => {
+            const hash = window.location.hash.substring(1);
+            if (hash) {
+                loadPage(hash);
+            }
+        });
+
+        // Load initial page from URL hash
+        window.addEventListener('load', () => {
+            const hash = window.location.hash.substring(1);
+            if (hash) {
+                currentPage = hash;
+            }
+        });
+
+        // Initialize on page load
+        initDocs();
+    </script>
+</body>
+</html>

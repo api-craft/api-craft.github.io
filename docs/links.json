@@ -1,0 +1,93 @@
+        {
+            "title": "API-Craft Documentation",
+            "description": "Complete guide to building APIs with API-Craft",
+            "version": "1.0.0",
+            "chapters": [
+                {
+                    "id": "getting-started",
+                    "title": "Getting Started",
+                    "icon": "🚀",
+                    "sections": [
+                        {
+                            "id": "introduction",
+                            "title": "Introduction",
+                            "description": "Welcome to API-Craft",
+                            "content": "API-Craft is a powerful framework for building robust APIs quickly and efficiently.",
+                            "codeExamples": [
+                                {
+                                    "language": "javascript",
+                                    "title": "Basic Setup",
+                                    "code": "npm install api-craft\n\nconst { APIServer } = require('api-craft');\nconst server = new APIServer();\n\nserver.start(3000);"
+                                }
+                            ]
+                        },
+                        {
+                            "id": "installation",
+                            "title": "Installation",
+                            "description": "How to install API-Craft",
+                            "content": "Install API-Craft using npm or yarn package manager.",
+                            "codeExamples": [
+                                {
+                                    "language": "bash",
+                                    "title": "NPM Installation",
+                                    "code": "npm install api-craft\n# or\nyarn add api-craft"
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "id": "api-reference",
+                    "title": "API Reference",
+                    "icon": "📖",
+                    "sections": [
+                        {
+                            "id": "routes",
+                            "title": "Routes",
+                            "description": "Define API routes",
+                            "content": "Routes are the foundation of your API. Define them using simple, intuitive methods.",
+                            "codeExamples": [
+                                {
+                                    "language": "javascript",
+                                    "title": "Route Definition",
+                                    "code": "server.get('/users', (req, res) => {\n  res.json({ users: [] });\n});\n\nserver.post('/users', (req, res) => {\n  // Create user logic\n  res.status(201).json({ success: true });\n});"
+                                }
+                            ]
+                        },
+                        {
+                            "id": "middleware",
+                            "title": "Middleware",
+                            "description": "Use middleware functions",
+                            "content": "Middleware functions execute during the request-response cycle.",
+                            "codeExamples": [
+                                {
+                                    "language": "javascript",
+                                    "title": "Custom Middleware",
+                                    "code": "const authMiddleware = (req, res, next) => {\n  // Authentication logic\n  if (req.headers.authorization) {\n    next();\n  } else {\n    res.status(401).json({ error: 'Unauthorized' });\n  }\n};\n\nserver.use(authMiddleware);"
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "id": "examples",
+                    "title": "Examples",
+                    "icon": "💡",
+                    "sections": [
+                        {
+                            "id": "basic-crud",
+                            "title": "Basic CRUD",
+                            "description": "Create a basic CRUD API",
+                            "content": "Learn how to implement Create, Read, Update, and Delete operations.",
+                            "codeExamples": [
+                                {
+                                    "language": "javascript",
+                                    "title": "CRUD Operations",
+                                    "code": "// GET all items\nserver.get('/items', (req, res) => {\n  res.json(items);\n});\n\n// GET single item\nserver.get('/items/:id', (req, res) => {\n  const item = items.find(i => i.id === req.params.id);\n  res.json(item);\n});\n\n// POST new item\nserver.post('/items', (req, res) => {\n  const newItem = { id: Date.now(), ...req.body };\n  items.push(newItem);\n  res.status(201).json(newItem);\n});"
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        }
